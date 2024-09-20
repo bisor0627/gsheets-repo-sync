@@ -1,0 +1,33 @@
+name: Sync CSV to Google Sheets
+
+on:
+  push:
+    paths:
+      - 'test'
+      - 'assets/translations/table.csv'
+
+jobs:
+  update_google_sheet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+
+      - name: Sync CSV to Google Sheets
+        env:
+          GOOGLE_SERVICE_ACCOUNT_DATA: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DATA }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          SHEET_NAME: "hi"
+          CSV_FILE_PATH: "assets/translations/table.csv"  # script.sh로 수정 가능
+        run: python .github/scripts/update_sheets.py
