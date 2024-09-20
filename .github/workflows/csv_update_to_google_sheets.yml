@@ -1,10 +1,11 @@
 name: Sync CSV to Google Sheets
 
 on:
-  push:
-    paths:
-      - 'test'
-      - 'assets/translations/table.csv'
+  push: # TODO: Update the Trigger event
+    branches:
+      - gsheet-sync 
+      
+
 
 jobs:
   update_google_sheet:
@@ -28,6 +29,6 @@ jobs:
         env:
           GOOGLE_SERVICE_ACCOUNT_DATA: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DATA }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
-          SHEET_NAME: "hi"
-          CSV_FILE_PATH: "assets/translations/table.csv"  # script.sh로 수정 가능
+          SHEET_NAME: 'sheet_1' #TODO: Update the sheet name
+          CSV_FILE_PATH: 'your/csv/file.csv' #TODO: Update the path to your CSV file
         run: python .github/scripts/update_sheets.py

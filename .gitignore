@@ -7,3 +7,4 @@
 
 # Windows files
 Thumbs.db
+.github/workflows/csv_update_to_google_sheets.yml.bak
