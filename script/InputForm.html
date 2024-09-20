@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 600px; /* 최대 너비 600px */
+        width: 100%; /* 100% 너비 */
+        margin: 0 auto;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      button {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .form-container {
+        margin-top: 30px;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #777;
+        font-size: 12px;
+      }
+
+      /* 반응형 모달 스타일 */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* 화면 크기의 80% 너비 */
+        max-width: 600px; /* 최대 600px */
+        min-width: 300px; /* 최소 300px */
+        max-height: 80%; /* 화면 크기의 80% 높이 */
+        overflow-y: auto; /* 내용이 많을 때 스크롤 */
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+      }
+
+      .modal h3 {
+        color: #333;
+        text-align: center;
+      }
+
+      .config-data {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 20px;
+      }
+
+      .config-data p {
+        margin: 5px 0;
+      }
+
+      .config-label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .modal-buttons button {
+        width: 48%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .modal-buttons button.edit {
+        background-color: #f39c12;
+      }
+
+      .modal-buttons button:hover {
+        opacity: 0.8;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h2>GitHub Configuration</h2>
+    <div class="form-container">
+      <form id="configForm">
+        <label for="githubToken">GitHub Token:</label>
+        <input type="text" id="githubToken" name="githubToken" required>
+
+        <label for="repoOwner">GitHub Username:</label>
+        <input type="text" id="repoOwner" name="repoOwner" required>
+
+        <label for="repoName">Repository Name:</label>
+        <input type="text" id="repoName" name="repoName" required>
+
+        <label for="branchName">Branch Name:</label>
+        <input type="text" id="branchName" name="branchName" required>
+
+        <label for="filePath">File Path (e.g., assets/translations/):</label>
+        <input type="text" id="filePath" name="filePath" required>
+
+         <label for="fileName">File Name (e.g., a_table.csv):</label>
+        <input type="text" id="fileName" name="fileName" required>
+
+
+        <button type="button" onclick="submitForm()">Submit</button>
+      </form>
+    </div>
+    <div class="footer">
+      Powered by Google Apps Script
+    </div>
+
+    <!-- 모달 창 -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <h3>Configuration Details</h3>
+        <div class="config-data" id="configData">
+          <!-- 입력 데이터가 여기에 표시됩니다. -->
+        </div>
+        <div class="modal-buttons">
+          <button class="ok" onclick="saveAndClose()">OK</button>
+          <button class="edit" onclick="editData()">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 폼 제출 처리
+      function submitForm() {
+        var formData = {
+          githubToken: document.getElementById('githubToken').value,
+          repoOwner: document.getElementById('repoOwner').value,
+          repoName: document.getElementById('repoName').value,
+          branchName: document.getElementById('branchName').value,
+          filePath: document.getElementById('filePath').value,
+          fileName: document.getElementById('fileName').value,
+        };
+
+        // Google Apps Script 함수 호출
+        google.script.run
+          .withSuccessHandler(function(response) {
+            // 입력된 데이터를 모달에 표시
+            showModal(formData);
+          })
+          .saveGitHubConfig_(formData);
+      }
+
+      // 모달 창 열기
+      function showModal(formData) {
+        var configData = `
+          <p><span class="config-label">GitHub Token:</span> ${formData.githubToken}</p>
+          <p><span class="config-label">GitHub Username:</span> ${formData.repoOwner}</p>
+          <p><span class="config-label">Repository Name:</span> ${formData.repoName}</p>
+          <p><span class="config-label">Branch Name:</span> ${formData.branchName}</p>
+          <p><span class="config-label">File Path:</span> ${formData.filePath}</p>
+          <p><span class="config-label">File Name:</span> ${formData.fileName}</p>
+        `;
+        document.getElementById('configData').innerHTML = configData;
+        document.getElementById('myModal').style.display = "block";
+      }
+
+      // OK 버튼 클릭 시 창 닫기
+      function saveAndClose() {
+        document.getElementById('myModal').style.display = "none";
+        google.script.host.close(); // 창을 닫습니다.
+      }
+
+      // Edit 버튼 클릭 시 데이터 수정 가능하게 폼으로 돌아가기
+      function editData() {
+        document.getElementById('myModal').style.display = "none";
+      }
+    </script>
+  </body>
+</html>
