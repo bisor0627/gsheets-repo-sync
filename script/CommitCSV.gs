@@ -24,19 +24,22 @@ function commitCSVToGitHub_(csvContent) {
   var BRANCH_NAME = properties.getProperty("BRANCH_NAME");
   var FILE_PATH = properties.getProperty("FILE_PATH");
   var FILE_NAME = properties.getProperty("FILE_NAME");
+
   // CSV 내용을 UTF-8로 변환 및 Base64 인코딩
   var utf8Content = Utilities.newBlob(csvContent).getBytes();
   var base64Content = Utilities.base64Encode(utf8Content);
 
-  // GitHub API URL
+  // GitHub API URL에 ref로 브랜치를 추가
   var url =
     "https://api.github.com/repos/" +
-    REPO_OWNER +
+    encodeURIComponent(REPO_OWNER) +
     "/" +
-    REPO_NAME +
+    encodeURIComponent(REPO_NAME) +
     "/contents/" +
     FILE_PATH +
-    FILE_NAME;
+    encodeURIComponent(FILE_NAME) +
+    "?ref=" +
+    encodeURIComponent(BRANCH_NAME); // ref를 통해 브랜치 지정
 
   // 파일 상태 확인 (GET 요청)
   var response = UrlFetchApp.fetch(url, {
