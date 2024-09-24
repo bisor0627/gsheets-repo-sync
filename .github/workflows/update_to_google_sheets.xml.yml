@@ -1,0 +1,32 @@
+name: Sync XML to Google Sheets
+
+on:
+  push: # TODO: Update the Trigger event
+    branches:
+      - gsheet-sync 
+
+jobs:
+  update_google_sheet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2 xmltodict
+
+      - name: Sync XML to Google Sheets
+        env:
+          GOOGLE_SERVICE_ACCOUNT_DATA: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DATA }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          SHEET_NAME: 'sheet_1' # TODO: Google Sheets의 시트 이름으로 변경
+          XML_FILE_PATH: 'your/csv/file.xml' #TODO: Update the path to your XML file
+        run: python .github/scripts/update_sheets.xml.py
