@@ -31,4 +31,4 @@ jobs:
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
           SHEET_NAME: 'sheet_1' #TODO: Update the sheet name
           CSV_FILE_PATH: 'your/csv/file.csv' #TODO: Update the path to your CSV file
-        run: python .github/scripts/update_sheets.py
+        run: python .github/scripts/update_sheets.csv.py
