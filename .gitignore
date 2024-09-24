@@ -1,5 +1,4 @@
 # VS Code directories
-.vscode/
 .history/
 
 # MacOS files
@@ -8,3 +7,6 @@
 # Windows files
 Thumbs.db
 .github/workflows/csv_update_to_google_sheets.yml.bak
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
